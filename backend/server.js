@@ -19,7 +19,7 @@ app.use(cors());
 // connection url
 
 const connection_url =
-"write your mongodb"  
+"mongodb+srv://roy737970:admin@cluster0.g3cx0mt.mongodb.net/myDatabase"  
 
 mongoose.connect(connection_url, {
   useNewUrlParser: true,
