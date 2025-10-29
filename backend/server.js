@@ -5,32 +5,34 @@ const bcrypt = require("bcryptjs");
 const Users = require("./Users");  
 const Orders = require("./Orders"); 
 const Products = require("./Products");
-const stripe = require("stripe")(
- "write your strive keys" 
-) 
+
+// ✅ Load environment variables
+require("dotenv").config();
+
+// ✅ Use Stripe secret key from .env
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
-const port=3001;
+
+// ✅ Use port from .env or default to 3001
+const port = process.env.PORT || 3001;
 
 // Middlewares
 app.use(express.json());
 app.use(cors());
 
-// connection url
-
-const connection_url =
-"you database"  
+// ✅ MongoDB connection from .env
+const connection_url = process.env.MONGO_URI;
 
 mongoose.connect(connection_url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-// API
 
+// API 
 app.get("/", (req, res) => res.status(200).send("Home Page"));
 
 // add product
-
 app.post("/products/add", (req, res) => {
   const productDetail = req.body;
 
@@ -60,19 +62,18 @@ app.post("/payment/create", async(req, res)=>{
  const total=req.body.amount 
  console.log("payment received",total)   
 
-const payment=await stripe.paymentIntents.create({
-  amount: total*100, 
-  currency: "inr",
-});
+ const payment=await stripe.paymentIntents.create({
+   amount: total , 
+   currency: "inr",
+ });
 
-res.status(201).send({
-  clientSecret: payment.client_secret,
-});
+ res.status(201).send({
+   clientSecret: payment.client_secret,
+ });
 
 });
 
 // API for SIGNUP
-
 app.post("/auth/signup", async (req, res) => {
   const { email, password, fullName } = req.body;
 
@@ -100,7 +101,6 @@ app.post("/auth/signup", async (req, res) => {
 });
 
 // API for LOGIN
-
 app.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -153,7 +153,5 @@ app.post("/orders/get", (req, res) => {
 });
 
 
-
-
-app.listen(port, ()=>console.log("listering on the port",port)); 
+app.listen(port, ()=>console.log("Listening on port", port)); 
 
